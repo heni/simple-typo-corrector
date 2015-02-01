@@ -2,9 +2,11 @@
 #include "words_splitter.h"
 #include <stdexcept>
 #include <fstream>
+#include <iostream>
 #include <set>
 #include <unordered_map>
 #include <string>
+#include <functional>
 #include <cmath>
 
 class TLanguageModel {
@@ -13,8 +15,10 @@ class TLanguageModel {
     TStatsDictionary BiwordLogFreqs;
     TStatsDictionary TriGramsLogFreqs;
     TStatsDictionary FourGramsLogFreqs;
+    mutable std::unordered_map<std::wstring, double> NGramsCache;
 
     double DefaultLogFreq = log(.5e-6);
+    double DefaultCharLogFreq = log(1e-2);
 
     static TStatsDictionary LoadFreqs(std::wistream&& freqsReader) {
         if (!freqsReader)
@@ -48,7 +52,7 @@ class TLanguageModel {
         TStatsDictionary ngrams;
         for (auto entry: uniwordModel) {
             double freq = exp(entry.second);
-            for (int i = 1 - static_cast<int>(depth); i + 1 < entry.first.size(); ++i)
+            for (int i = 1 - static_cast<int>(depth); i + 1 < static_cast<int>(entry.first.size()); ++i)
                 ngrams[CreateNGram<depth>(entry.first, i)] += freq;
         }
         for (auto& entry: ngrams) {
@@ -66,6 +70,11 @@ class TLanguageModel {
         return it == stats.end() ? defValue : it->second;
     }
 
+    static double GetValueOrDefault(const TStatsDictionary& stats, const std::wstring& key, std::function<double()> fallback) {
+        auto it = stats.find(key);
+        return it == stats.end() ? fallback() : it->second;
+    }
+
 public:
     TLanguageModel(const std::string& unigramsFile, const std::string& bigramsFile)
         : UniwordLogFreqs(LoadFreqs(std::wifstream(unigramsFile)))
@@ -74,17 +83,29 @@ public:
         , FourGramsLogFreqs(CreateNGramsModel<4>(UniwordLogFreqs))
     {}
 
-
+    double CalcNGramLogFrequency(const std::wstring& word) const {
+        auto ngcIt = NGramsCache.find(word);
+        if (ngcIt == NGramsCache.end()) {
+            double logVal = GetValueOrDefault(FourGramsLogFreqs, CreateNGram<4>(word, -3), 4 * DefaultCharLogFreq);
+            for (int i = -2; i + 1 < static_cast<int>(word.size()); ++i) {
+                const double trgFreq = GetValueOrDefault(TriGramsLogFreqs, CreateNGram<3>(word, i), 3 * DefaultCharLogFreq);
+                logVal += GetValueOrDefault(FourGramsLogFreqs, CreateNGram<4>(word, i), 4 * DefaultCharLogFreq) - trgFreq;
+            }
+            ngcIt = NGramsCache.insert(std::make_pair(word, logVal)).first;
+        }
+        return ngcIt->second;
+    }
 
     double GetUniwordLogFrequency(const std::wstring& word) const {
-        return GetValueOrDefault(UniwordLogFreqs, word, DefaultLogFreq);
+        return GetValueOrDefault(UniwordLogFreqs, word, [&word, this]()->double {
+            return CalcNGramLogFrequency(word);
+        });
     }
 
     double GetBiwordLogFrequency(const std::wstring& w1, const std::wstring& w2) const {
-        auto it = BiwordLogFreqs.find(GetBiwordKey(w1, w2));
-        if (it != BiwordLogFreqs.end())
-            return it->second;
-        return GetUniwordLogFrequency(w1) + GetUniwordLogFrequency(w2);
+        return GetValueOrDefault(BiwordLogFreqs, GetBiwordKey(w1, w2), [&w1, &w2, this]()->double {
+            return GetUniwordLogFrequency(w1) + GetUniwordLogFrequency(w2);
+        });
     }
 
     double CalcModel(const std::wstring& text) const {
