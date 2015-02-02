@@ -44,4 +44,4 @@ if __name__ == "__main__":
     unigrams = collections.defaultdict(int)
     for paperFile in os.listdir(DatasetDir):
         LoadTextFrequencies(unigrams, bigrams, os.path.join(DatasetDir, paperFile))
-    SaveFrequencies(unigrams, bigrams, ".")
+    SaveFrequencies(unigrams, bigrams, "solution")
