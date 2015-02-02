@@ -13,4 +13,4 @@ run: misspell
 	./misspell
 
 clean:
-	rm -f misspell misspell.o language_model.o
+	rm -f misspell misspell.o language_model.o input.txt output.txt
