@@ -9,8 +9,13 @@ run-tests: checkers/checker solutions/misspell
 checkers/checker:
 	make -C checkers
 
+checkers/full-checker.cpp:
+	make -C checkers full-checker.cpp
+
 solutions/misspell:
 	make -C solutions
+
+
 
 solution_files := bigrams.txt language_model.cpp language_model.h makefile misspell.cpp string_iterator.h unigrams.txt words_splitter.h
 checker_files := full-checker.cpp checker.cpp makefile utf8.h utf8/checked.h utf8/core.h utf8/unchecked.h
