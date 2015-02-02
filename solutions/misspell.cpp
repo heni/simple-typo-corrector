@@ -86,6 +86,7 @@ public:
     {}
 
     std::wstring GetCorrection(std::wstring request) const {
+        LanguageModel.ClearCache();
         request = to_lower(request);
         for (size_t corrected = 0; corrected < 1; ++corrected) {
             TScoredCorrection bestCorrection(request, GetScore(request));

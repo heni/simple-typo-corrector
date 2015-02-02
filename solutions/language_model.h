@@ -83,6 +83,10 @@ public:
         , FourGramsLogFreqs(CreateNGramsModel<4>(UniwordLogFreqs))
     {}
 
+    void ClearCache() const {
+        NGramsCache.clear();
+    }
+
     double CalcNGramLogFrequency(const std::wstring& word) const {
         auto ngcIt = NGramsCache.find(word);
         if (ngcIt == NGramsCache.end()) {
