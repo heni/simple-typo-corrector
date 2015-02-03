@@ -93,10 +93,6 @@ int main(int argc, const char* argv[]) {
     double recall = correct_misspells * 1.0 / std::max(need_misspells, 1ul);
     double fMeasure = (precision > EPS && recall > EPS) ? 2.0 * precision * recall / (precision + recall) : 0.0;
 
-    std::wcout << L"precision: " << precision << std::endl;
-    std::wcout << L"recall: " << recall << std::endl;
-    std::wcout << L"F1: " << fMeasure << std::endl;
-
-    quitf(_ok, "value is %.4lf\n", fMeasure);
+    quitp(nRequests * fMeasure * 10.0);
     return 0;
 }

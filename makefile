@@ -20,9 +20,13 @@ solutions/misspell:
 solution_files := bigrams.txt language_model.cpp language_model.h makefile misspell.cpp string_iterator.h unigrams.txt words_splitter.h
 checker_files := full-checker.cpp checker.cpp makefile utf8.h utf8/checked.h utf8/core.h utf8/unchecked.h
 test_files := $(shell ls tests) 
-archive_files := $(patsubst %, solutions/%, $(solution_files)) $(patsubst %, checkers/%, $(checker_files)) $(patsubst %, tests/%, $(test_files))
+statements_files := .html/ru/texstatement.html
+archive_files := $(patsubst %, solutions/%, $(solution_files)) \
+    $(patsubst %, checkers/%, $(checker_files)) \
+    $(patsubst %, tests/%, $(test_files)) \
+    $(patsubst %, statements/%, $(statements_files))
 
-archives: full-archive solutions-archive tests-archive checkers-archive
+archives: full-archive solutions-archive tests-archive checkers-archive statements-archive
 
 full-archive: full-archive.tar.bz2
 full-archive.tar.bz2: $(archive_files)
@@ -39,7 +43,11 @@ tests.tar.bz2: $(patsubst %, tests/%, $(test_files))
 checkers-archive: checkers.tar.bz2
 checkers.tar.bz2: $(patsubst %, checkers/%, $(checker_files))
 	tar cjf $@ -C checkers $(checker_files)
-	
+
+statements-archive: statements.tar.bz2
+statements.tar.bz2: $(patsubst %, statements/%, $(statements_files))
+	tar cjf $@ $^
+
 clean:
 	make -C checkers clean; \
     make -C solutions clean; \
