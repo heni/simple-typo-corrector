@@ -20,7 +20,7 @@ solutions/misspell:
 solution_files := bigrams.txt language_model.cpp language_model.h makefile misspell.cpp string_iterator.h unigrams.txt words_splitter.h
 checker_files := full-checker.cpp checker.cpp makefile utf8.h utf8/checked.h utf8/core.h utf8/unchecked.h
 test_files := $(shell ls tests) 
-statements_files := .html/ru/texstatement.html
+statements_files := .html/ru/texstatement.html .html/en/textstatements.html
 archive_files := $(patsubst %, solutions/%, $(solution_files)) \
     $(patsubst %, checkers/%, $(checker_files)) \
     $(patsubst %, tests/%, $(test_files)) \

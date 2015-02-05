@@ -1,0 +1,114 @@
+<!DOCTYPE html
+  SYSTEM "html">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+</head>
+<div class="problem-statement">
+   <div class="header">
+      <h1 class="title">Misspell Correction</h1>
+      <table>
+         <tr class="time-limit">
+            <td class="property-title">Time Limit</td>
+            <td>120&nbsp;seconds</td>
+         </tr>
+         <tr class="memory-limit">
+            <td class="property-title">Memory Limit</td>
+            <td>1Gb</td>
+         </tr>
+         <tr class="input-file">
+            <td class="property-title">Input</td>
+            <td colspan="1">stdin or input.txt</td>
+         </tr>
+         <tr class="output-file">
+            <td class="property-title">Output</td>
+            <td colspan="1">stdout or output.txt</td>
+         </tr>
+      </table>
+   </div>
+   <h2></h2>
+   <div class="legend"><span style="">
+        <p>For perfect search results search engine needs to understand the natural language. Therefore Yandex invests into active 
+            development in such branch of Computer Science as Natural Language Processing. For now we have solutions for many problems from 
+            this branch: from simple character-set and language recognition for random text from Internet up to extraction from text it's topic, 
+            real-world objects, and relationships between these objects.
+            In this case you need to develop solution for one of the classic NLP problem (basic algrorithms for it's solution were developed
+            at 80's of previous century) - the misspells(and typos) correction.
+        </p>
+   </div>
+   <h2>Input format</h2>
+   <div class="input-specification"><span style="">
+        <p>The first line of input file contains single integer N (≤ 10000), number of requests.
+            The next N lines contains real requests form Yandex users. Unlike other ACM problems we don't garantee ... when all word 
+            have only letters of latin alphabet. Opposite we are the russian search engine and most of requests from our users are
+            in russian language. What we can garantee is: all their queries will be in UTF-8 character encoding and don't contain new line characters.
+        </p>
+    </span></div>
+   <h2>Output format</h2>
+   <div class="output-specification"><span style="">
+        <p>Into the output file you need to write exactly N lines. In each line your program must output the correct version of corresponding
+            requery or original request text if you consider that request has no any errors in it.
+        </p></span></div>
+   <h2>Example</h2>
+   <table class="sample-tests">
+      <thead>
+         <tr>
+            <th>Input</th>
+            <th>Output</th>
+         </tr>
+      </thead>
+      <tbody>
+         <tr>
+            <td><pre>12
+exmpl
+asociation for computn macinary
+пример
+зпах
+cfvfz ,tpjgfcyfz ltncrfz buhf
+перестре лка
+оспект Вернадского
+налогоплательщик
+гугл
+feysbuk
+типыданных
+однокласники
+</pre></td>
+            <td><pre>example
+association for computing machinery
+пример
+запах
+самая безопасная детская игра
+перестрелка
+проспект Вернадского
+налогоплательщик
+гугл
+facebook
+типы данных
+одноклассники
+</pre></td>
+         </tr>
+      </tbody>
+   </table>
+   <h2>Comments</h2>
+   <div class="notes"><span style="">
+        <p>We understand that right correction of 100% of misspells is practically impossible problem. And we decide that AC can get any
+            program that correspond output format. But we'll range contestants by <a href="http://en.wikipedia.org/wiki/F1_score">F1-scores</a>
+            of their programs. During the verification of misspell corrections queries and suffested variants will be normalized. 
+            All characters transform into lowercase, non alphanumerical characters transform into spaces, add spaces to split alphanumerical sequences
+            ("c100" -&gt; "c 100"). For looking at the code of our checker you can 
+            <a href="https://github.com/heni/simple-typo-corrector/blob/master/checkers/checker.cpp">follow the link</a>
+        </p></span>
+        <p>We have allready realize <a href="https://github.com/heni/simple-typo-corrector">very simple solution</a> for this task.
+        The main idea of this solution is:
+        <ul>
+            <li>as a first stage collect frequency dictionary of unigrams and bigrams for russian language 
+            (we use works of L.Tolstoy as representative sample of russian texts);</li>
+            <li>this dictionary is used for generation corresponding 
+            <a href="http://en.wikipedia.org/wiki/Language_model">Language Model</a>;</li>
+            <li>for each request generate all possible suggestions which can be gotten from 
+            original query by correcion only 1 error;</li>
+            <li>the best correction we choose as suggestion with the highest Language Model Weight
+            (if original query has the highest weight we consider that it doesn't have any errors)</li>
+        </ul>
+      </p>
+   </div>
+</div>
